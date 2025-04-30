@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #sidebar {
+            width: 30%;
+            padding: 20px;
+            background: #0f0716;
+            color: white;
+            overflow-y: auto;
+        }
+
+        #main-content {
+            width: 70%;
+            padding: 20px;
+            background: #f0f0f0;
+            overflow-y: auto;
+        }
+
+        .order {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            color: black;
+        }
+
+        button {
+            background: white;
+            color: black;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #ddd;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e6750c;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="sidebar">
+    <h2>Order Dashboard</h2>
+    <input id="customer-id-input" type="text" placeholder="Enter Customer ID (e.g., CUST0046)">
+    <button onclick="fetchOrders()">Search</button>
+
+    <h3>Order Details</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>Delivery Date</th>
+        </tr>
+        </thead>
+        <tbody id="order-table-body">
+        <!-- Order data will be injected here -->
+        </tbody>
+    </table>
+    <p id="no-orders-msg" style="color: #ffcccc; display: none;">No orders found for this Customer ID.</p>
+</div>
+
+<div id="main-content">
+    <div class="chart-container">
+        <h3 class="chart-title">Order Status Chart</h3>
+        <img id="order-status-chart" class="w-full" alt="Order Status Chart">
+        <p id="no-chart-msg" style="color: #ffcccc; display: none;">Unable to load chart.</p>
+    </div>
+
+    <div class="chart-container">
+        <h3 class="chart-title">Spending Trend Chart</h3>
+        <img id="spending-trend-chart" class="w-full" alt="Spending Trend Chart">
+    </div>
+</div>
+
+<script>
+    function fetchOrders() {
+        const customerId = document.getElementById("customer-id-input").value.trim().toUpperCase();
+
+        if (!customerId) {
+            alert("Please enter a valid Customer ID!");
+            return;
+        }
+
+        fetch(`http://127.0.0.1:5000/orders?customer_id=${customerId}`)
+            .then(response => {
+                if (!response.ok) {
+                    document.getElementById("no-orders-msg").style.display = "block";
+                    document.getElementById("order-table-body").innerHTML = "";
+                    throw new Error("No orders found");
+                }
+                document.getElementById("no-orders-msg").style.display = "none";
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById("order-table-body");
+                tableBody.innerHTML = data.map(order => `
+                    <tr>
+                        <td>${order.product}</td>
+                        <td>${order.status}</td>
+                        <td>$${order.price}</td>
+                        <td>${order.delivery_date}</td>
+                    </tr>
+                `).join("");
+
+                fetchChart(`/chart/orders/${customerId}`, "order-status-chart");
+                fetchChart(`/chart/spending/${customerId}`, "spending-trend-chart");
+            })
+            .catch(error => console.error("Error fetching orders:", error));
+    }
+
+    function fetchChart(endpoint, imgId) {
+        fetch(`http://127.0.0.1:5000${endpoint}`)
+            .then(response => {
+                if (!response.ok) {
+                    document.getElementById(imgId).style.display = "none";
+                    document.getElementById("no-chart-msg").style.display = "block";
+                    throw new Error("Chart not available");
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const img = document.getElementById(imgId);
+                img.src = URL.createObjectURL(blob);
+                img.style.display = "block";
+                document.getElementById("no-chart-msg").style.display = "none";
+            })
+            .catch(error => console.error("Error loading chart:", error));
+    }
+</script>
+
+</body>
+</html>

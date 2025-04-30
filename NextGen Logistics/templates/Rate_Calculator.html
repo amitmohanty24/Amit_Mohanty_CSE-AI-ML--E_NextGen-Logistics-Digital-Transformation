@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Calculator</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background-color: #510ca0; 
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container { 
+            max-width: 400px; 
+            width: 100%;
+            margin: auto; 
+            background: rgb(212, 68, 68); 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: white;
+            text-align: center;
+            margin-top: 0;
+        }
+        label { 
+            display: block; 
+            margin-top: 15px; 
+            font-weight: bold;
+            color: white;
+        }
+        input, select { 
+            margin-top: 5px; 
+            padding: 12px; 
+            width: 100%; 
+            border: 1px solid #ccc; 
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button { 
+            background:rgb(15, 20, 26);
+            color: white; 
+            border: none; 
+            cursor: pointer;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover { 
+            background: rgb(189, 203, 218); 
+        }
+        .result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background-color: #e0f7fa; 
+            border: 1px solid #00acc1; 
+            font-size: 18px; 
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .checkbox-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-top: 15px;
+        }
+        #insurance {
+            width: auto;
+        }
+        .checkbox-container label {
+            margin-top: 0;
+        }
+        .error {
+            color: #ffeb3b;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📦 Rate Calculator</h2>
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" step="0.1" min="0.1" required>
+
+        <label for="distance">Distance (km):</label>
+        <input type="number" id="distance" step="0.1" min="1" required>
+
+        <label for="serviceType">Service Type:</label>
+        <select id="serviceType" required>
+            <option value="standard">Standard (3-5 days)</option>
+            <option value="express">Express (2 days)</option>
+            <option value="overnight">Overnight (1 day)</option>
+        </select>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="insurance">
+            <label for="insurance">Include Insurance (+$10)</label>
+        </div>
+
+        <button onclick="calculateRate()">Calculate Shipping Rate</button>
+        <div class="result" id="result">Total Cost: $0.00</div>
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        async function calculateRate() {
+            const weightInput = document.getElementById('weight');
+            const distanceInput = document.getElementById('distance');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            
+            // Clear previous messages
+            errorDiv.textContent = '';
+            resultDiv.textContent = 'Calculating...';
+            
+            const weight = parseFloat(weightInput.value);
+            const distance = parseFloat(distanceInput.value);
+            const serviceType = document.getElementById('serviceType').value;
+            const insurance = document.getElementById('insurance').checked;
+
+            // Validate inputs
+            if (isNaN(weight) || weight <= 0) {
+                errorDiv.textContent = "Please enter a valid weight (minimum 0.1kg)";
+                resultDiv.textContent = "Total Cost: $0.00";
+                weightInput.focus();
+                return;
+            }
+            
+            if (isNaN(distance) || distance <= 0) {
+                errorDiv.textContent = "Please enter a valid distance (minimum 1km)";
+                resultDiv.textContent = "Total Cost: $0.00";
+                distanceInput.focus();
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/calculate-rate', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        weight: weight,
+                        distance: distance,
+                        service_type: serviceType,
+                        insurance: insurance
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to calculate rate");
+                }
+                
+                if (data.error) {
+                    errorDiv.textContent = data.error;
+                    resultDiv.textContent = "Total Cost: $0.00";
+                } else {
+                    resultDiv.textContent = `Total Cost: $${data.total_cost.toFixed(2)}`;
+                    console.log("Cost breakdown:", data.breakdown);
+                }
+            } catch (error) {
+                errorDiv.textContent = "Error: " + error.message;
+                resultDiv.textContent = "Total Cost: $0.00";
+                console.error("Calculation error:", error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next-Gen Logistics</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .feature-card h2 {
+            color: rgb(10, 12, 14);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .feature-card .icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: #3498db;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .chatbot-toggler {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .chatbot-toggler:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            max-height: 500px;
+        }
+        
+        .chatbot-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbot-messages {
+            padding: 1rem;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        
+        .chatbot-input {
+            display: flex;
+            padding: 0.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .chatbot-input input {
+            flex-grow: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+        
+        .chatbot-input button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .bot-message {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+        }
+        
+        .user-message {
+            background-color: #3498db;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Next-Gen Logistics</h1>
+        <p>Streamline your shipping operations with our powerful tools</p>
+    </div>
+    
+    <div class="container">
+        <div class="features">
+            <!-- Shipment Tracker Card -->
+            <div class="feature-card">
+                <h2><span class="icon">📦</span> Shipment Tracker</h2>
+                <p>Track your shipments in real-time with our advanced tracking system. Get live updates on location and estimated delivery times.</p>
+                <a href="/shipment-tracker" class="btn" target="_blank" rel="noopener noreferrer">Track Shipment</a>
+            </div>
+            
+            <!-- Order Dashboard Card -->
+            <div class="feature-card">
+                <h2><span class="icon">📊</span> Order Dashboard</h2>
+                <p>Manage all your orders in one place. View order history, status, and generate detailed reports.</p>
+                <a href="/order-dashboard" class="btn" target="_blank" rel="noopener noreferrer">View Dashboard</a>
+            </div>
+            
+            <!-- Rate Calculator Card -->
+            <div class="feature-card">
+                <h2><span class="icon">🧮</span> Rate Calculator</h2>
+                <p>Calculate shipping costs instantly based on weight, distance, and service type. Compare rates across carriers.</p>
+                <a href="/rate-calculator" class="btn" target="_blank" rel="noopener noreferrer">Calculate Rates</a>
+            </div>
+            
+            <!-- Chatbot Card -->
+            <div class="feature-card">
+                <h2><span class="icon">💬</span> Logistics Assistant</h2>
+                <p>Get instant answers to your logistics questions. Our AI assistant can help with tracking, rates, and more.</p>
+                <button class="btn" id="open-chatbot-btn">Chat Now</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="chatbot-toggler" id="chatbot-toggler">
+        💬
+    </button>
+
+    <div class="chatbot-container" id="chatbot-container">
+        <div class="chatbot-header">
+            <h3>Logistics Assistant</h3>
+            <button id="close-chatbot" style="background: none; border: none; color: white; font-size: 1.2rem;">×</button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <div class="message bot-message">
+                Hello! I'm your logistics assistant. How can I help you today?
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-message">Send</button>
+        </div>
+    </div>
+    
+    <script>
+        // Chatbot functionality
+        const chatbotToggler = document.getElementById('chatbot-toggler');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const openChatbotBtn = document.getElementById('open-chatbot-btn');
+        const closeChatbot = document.getElementById('close-chatbot');
+        const userInput = document.getElementById('user-input');
+        const sendMessageBtn = document.getElementById('send-message');
+        const chatMessages = document.getElementById('chatbot-messages');
+
+        function toggleChatbot() {
+            chatbotContainer.style.display = chatbotContainer.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        openChatbotBtn.addEventListener('click', toggleChatbot);
+
+        chatbotToggler.addEventListener('click', toggleChatbot);
+        closeChatbot.addEventListener('click', toggleChatbot);
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('message', 'user-message');
+            userMessage.textContent = message;
+            chatMessages.appendChild(userMessage);
+            
+            userInput.value = '';
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('message', 'bot-message');
+
+                if (message.toLowerCase().includes('track')) {
+                    botMessage.innerHTML = 'You can track your shipments using our <a href="/shipment-tracker" target="_blank" rel="noopener noreferrer">Shipment Tracker</a>.';
+                } else if (message.toLowerCase().includes('rate') || message.toLowerCase().includes('price')) {
+                    botMessage.innerHTML = 'Our <a href="/rate-calculator" target="_blank" rel="noopener noreferrer">Rate Calculator</a> can help you estimate shipping costs.';
+                } else if (message.toLowerCase().includes('order')) {
+                    botMessage.innerHTML = 'Check the <a href="/order-dashboard" target="_blank" rel="noopener noreferrer">Order Dashboard</a> for all your order details.';
+                } else {
+                    botMessage.textContent = 'I can help with shipment tracking, rate calculation, and order management. What do you need help with?';
+                }
+                
+                chatMessages.appendChild(botMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+
+        sendMessageBtn.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        const sampleQuestions = [
+            "How do I track a shipment?",
+            "What's the cost to ship to New York?",
+            "Where can I see my order history?"
+        ];
+
+        setTimeout(() => {
+            sampleQuestions.forEach(question => {
+                const sampleQuestion = document.createElement('div');
+                sampleQuestion.classList.add('message', 'bot-message');
+                sampleQuestion.style.cursor = 'pointer';
+                sampleQuestion.style.margin = '0.5rem 0';
+                sampleQuestion.style.padding = '0.5rem';
+                sampleQuestion.style.fontSize = '0.9rem';
+                sampleQuestion.textContent = question;
+                
+                sampleQuestion.addEventListener('click', () => {
+                    userInput.value = question;
+                    sendMessage();
+                });
+                
+                chatMessages.appendChild(sampleQuestion);
+            });
+        }, 1500);
+    </script>
+</body>
+</html>

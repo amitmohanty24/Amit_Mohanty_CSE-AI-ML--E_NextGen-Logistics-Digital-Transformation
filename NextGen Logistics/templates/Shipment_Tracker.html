@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        #sidebar {
+            width: 30%;
+            padding: 20px;
+            background: #0aa9d1;
+            color: rgb(49, 46, 46);
+            overflow-y: auto;
+        }
+        #map {
+            width: 70%;
+            height: 100vh;
+        }
+        .order {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            color: black;
+        }
+        button {
+            background: white;
+            color: black;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #ddd;
+        }
+        input {
+            width: 70%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h2>Tracking Delivery</h2>
+        <input type="text" id="order_id" placeholder="Enter Order ID">
+        <button onclick="trackShipment()">Track</button>
+        <div id="orders"></div>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([28.6139, 77.2090], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        var marker, polyline;
+
+        function trackShipment() {
+            var order_id = document.getElementById("order_id").value.trim();
+            if (!order_id) {
+                alert("Please enter an Order ID");
+                return;
+            }
+
+            $.getJSON(`/track_shipment?order_id=${order_id}`, function(data) {
+                // Debugging output
+                console.log("Received data:", data);
+
+                if (marker) map.removeLayer(marker);
+                if (polyline) map.removeLayer(polyline);
+
+                marker = L.marker([data.lat, data.lng]).addTo(map)
+                    .bindPopup("Order ID: " + order_id + "<br>Status: In Transit<br>Location: (" + data.lat + ", " + data.lng + ")")
+                    .openPopup();
+
+                if(data.destination){
+                    polyline = L.polyline([[data.lat, data.lng], data.destination], {color: 'blue'}).addTo(map);
+                }
+
+                map.setView([data.lat, data.lng], 10);
+
+                $("#orders").html(`
+                    <div class="order">
+                        <b>Order ID:</b> ${order_id}<br>
+                        <b>Status:</b> In Transit<br>
+                        <b>Current Location:</b> (${data.lat}, ${data.lng})
+                    </div>
+                `);
+            }).fail(function(response) {
+                console.log("Error:", response.responseJSON);
+                alert(response.responseJSON.error || "Order not found");
+            });
+        }
+    </script>
+</body>
+</html>
